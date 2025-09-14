@@ -44,6 +44,7 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
+            position: relative;
         }
 
         h1 {
@@ -214,20 +215,58 @@
         .tab-pane.active {
             display: block;
         }
+
+        /* UI Language Selector */
+        .ui-language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ui-language-selector span {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .ui-language-selector select {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>ModLanguage.js Editor</h1>
-            <p class="description">Công cụ chỉnh sửa và quản lý file ngôn ngữ cho mod</p>
+            <div class="ui-language-selector">
+                <span data-translate="ui_language">Ngôn ngữ giao diện:</span>
+                <select id="uiLanguage">
+                    <option value="vi">Tiếng Việt</option>
+                    <option value="en">English</option>
+                    <option value="chs">简体中文</option>
+                    <option value="ja">日本語</option>
+                    <option value="es">Español</option>
+                    <option value="id">Indonesia</option>
+                    <option value="ko">Korean</option>
+                    <option value="pt">Brazil</option>
+                    <option value="pl">Polish</option>
+                    <option value="ru">Russian</option>
+                    <option value="fr">French</option>
+                    <option value="tr">Turkish</option>
+                    <option value="it">Italian</option>
+                </select>
+            </div>
+            
+            <h1 data-translate="title">ModLanguage.js Editor</h1>
+            <p class="description" data-translate="description">Công cụ chỉnh sửa và quản lý file ngôn ngữ cho mod</p>
         </header>
 
         <div class="file-section">
-            <h2 class="section-title">Quản lý File</h2>
+            <h2 class="section-title" data-translate="file_management">Quản lý File</h2>
             <div class="language-selector">
-                <label for="language">Chọn ngôn ngữ:</label>
+                <label for="language" data-translate="select_language">Chọn ngôn ngữ:</label>
                 <select id="language">
                     <option value="en">English</option>
                     <option value="chs">简体中文</option>
@@ -246,8 +285,8 @@
             </div>
 
             <input type="file" id="fileInput" accept=".js" class="hidden">
-            <button id="importBtn" class="btn">Import ModLanguage.js</button>
-            <button id="exportBtn" class="btn btn-success" disabled>Export ModLanguage.js</button>
+            <button id="importBtn" class="btn" data-translate="import_button">Import ModLanguage.js</button>
+            <button id="exportBtn" class="btn btn-success" disabled data-translate="export_button">Export ModLanguage.js</button>
 
             <div id="messageArea"></div>
         </div>
@@ -255,8 +294,8 @@
         <div class="editor-section hidden" id="editorSection">
             <div class="tab-container">
                 <div class="tab-buttons">
-                    <button class="tab-button active" data-tab="table-view">Xem dạng bảng</button>
-                    <button class="tab-button" data-tab="code-view">Xem mã nguồn</button>
+                    <button class="tab-button active" data-tab="table-view" data-translate="table_view">Xem dạng bảng</button>
+                    <button class="tab-button" data-tab="code-view" data-translate="code_view">Xem mã nguồn</button>
                 </div>
 
                 <div class="tab-content">
@@ -266,7 +305,7 @@
 
                     <div class="tab-pane" id="code-view">
                         <textarea id="codeEditor" class="code-editor"></textarea>
-                        <button id="saveCodeBtn" class="btn" style="margin-top: 15px;">Lưu thay đổi</button>
+                        <button id="saveCodeBtn" class="btn" style="margin-top: 15px;" data-translate="save_changes">Lưu thay đổi</button>
                     </div>
                 </div>
             </div>
@@ -284,10 +323,157 @@
             const saveCodeBtn = document.getElementById('saveCodeBtn');
             const translationTableContainer = document.getElementById('translationTableContainer');
             const languageSelector = document.getElementById('language');
+            const uiLanguageSelector = document.getElementById('uiLanguage');
             const tabButtons = document.querySelectorAll('.tab-button');
 
             let modLanguageData = null;
             let currentLang = 'en';
+            let currentUiLang = 'vi';
+
+            const uiTranslations = {
+                'vi': {
+                    'title': 'ModLanguage.js Editor',
+                    'description': 'Công cụ chỉnh sửa và quản lý file ngôn ngữ cho mod',
+                    'file_management': 'Quản lý File',
+                    'select_language': 'Chọn ngôn ngữ:',
+                    'import_button': 'Import ModLanguage.js',
+                    'export_button': 'Export ModLanguage.js',
+                    'table_view': 'Xem dạng bảng',
+                    'code_view': 'Xem mã nguồn',
+                    'save_changes': 'Lưu thay đổi',
+                    'ui_language': 'Ngôn ngữ giao diện:',
+                    'import_success': 'Đã import file thành công!',
+                    'export_success': 'Đã xuất file thành công!',
+                    'update_success': 'Đã cập nhật bản dịch thành công!',
+                    'code_update_success': 'Đã cập nhật mã nguồn thành công!',
+                    'file_error': 'Lỗi khi đọc file',
+                    'parse_error': 'Lỗi khi phân tích file: ',
+                    'code_parse_error': 'Lỗi khi phân tích mã nguồn: '
+                },
+                'en': {
+                    'title': 'ModLanguage.js Editor',
+                    'description': 'Tool for editing and managing language files for mods',
+                    'file_management': 'File Management',
+                    'select_language': 'Select language:',
+                    'import_button': 'Import ModLanguage.js',
+                    'export_button': 'Export ModLanguage.js',
+                    'table_view': 'Table View',
+                    'code_view': 'Code View',
+                    'save_changes': 'Save Changes',
+                    'ui_language': 'Interface Language:',
+                    'import_success': 'File imported successfully!',
+                    'export_success': 'File exported successfully!',
+                    'update_success': 'Translation updated successfully!',
+                    'code_update_success': 'Source code updated successfully!',
+                    'file_error': 'Error reading file',
+                    'parse_error': 'Error parsing file: ',
+                    'code_parse_error': 'Error parsing source code: '
+                },
+                'chs': {
+                    'title': 'ModLanguage.js 编辑器',
+                    'description': '用于编辑和管理模组语言文件的工具',
+                    'file_management': '文件管理',
+                    'select_language': '选择语言:',
+                    'import_button': '导入 ModLanguage.js',
+                    'export_button': '导出 ModLanguage.js',
+                    'table_view': '表格视图',
+                    'code_view': '代码视图',
+                    'save_changes': '保存更改',
+                    'ui_language': '界面语言:',
+                    'import_success': '文件导入成功!',
+                    'export_success': '文件导出成功!',
+                    'update_success': '翻译更新成功!',
+                    'code_update_success': '源代码更新成功!',
+                    'file_error': '读取文件时出错',
+                    'parse_error': '解析文件时出错: ',
+                    'code_parse_error': '解析源代码时出错: '
+                },
+                'ja': {
+                    'title': 'ModLanguage.js エディター',
+                    'description': 'modの言語ファイルを編集および管理するためのツール',
+                    'file_management': 'ファイル管理',
+                    'select_language': '言語を選択:',
+                    'import_button': 'ModLanguage.jsをインポート',
+                    'export_button': 'ModLanguage.jsをエクスポート',
+                    'table_view': 'テーブル表示',
+                    'code_view': 'コード表示',
+                    'save_changes': '変更を保存',
+                    'ui_language': 'インターフェース言語:',
+                    'import_success': 'ファイルのインポートに成功しました!',
+                    'export_success': 'ファイルのエクスポートに成功しました!',
+                    'update_success': '翻訳が正常に更新されました!',
+                    'code_update_success': 'ソースコードが正常に更新されました!',
+                    'file_error': 'ファイルの読み取り中にエラーが発生しました',
+                    'parse_error': 'ファイルの解析中にエラーが発生しました: ',
+                    'code_parse_error': 'ソースコードの解析中にエラーが発生しました: '
+                },
+                'es': {
+                    'title': 'Editor ModLanguage.js',
+                    'description': 'Herramienta para editar y gestionar archivos de idioma para mods',
+                    'file_management': 'Gestión de Archivos',
+                    'select_language': 'Seleccionar idioma:',
+                    'import_button': 'Importar ModLanguage.js',
+                    'export_button': 'Exportar ModLanguage.js',
+                    'table_view': 'Vista de Tabla',
+                    'code_view': 'Vista de Código',
+                    'save_changes': 'Guardar Cambios',
+                    'ui_language': 'Idioma de Interfaz:',
+                    'import_success': '¡Archivo importado con éxito!',
+                    'export_success': '¡Archivo exportado con éxito!',
+                    'update_success': '¡Traducción actualizada con éxito!',
+                    'code_update_success': '¡Código fuente actualizado con éxito!',
+                    'file_error': 'Error al leer el archivo',
+                    'parse_error': 'Error al analizar el archivo: ',
+                    'code_parse_error': 'Error al analizar el código fuente: '
+                }
+            };
+
+            function initUiLanguage() {
+                const savedLang = localStorage.getItem('uiLanguage');
+                if (savedLang && uiTranslations[savedLang]) {
+                    currentUiLang = savedLang;
+                } 
+                else {
+                    const browserLang = navigator.language.split('-')[0];
+                    if (browserLang && uiTranslations[browserLang]) {
+                        currentUiLang = browserLang;
+                    }
+                    else {
+                        currentUiLang = 'en';
+                    }
+                }
+                
+                uiLanguageSelector.value = currentUiLang;
+                
+                updateUiLanguage();
+            }
+
+            function updateUiLanguage() {
+                const translations = uiTranslations[currentUiLang] || uiTranslations['en'];
+                
+                document.querySelectorAll('[data-translate]').forEach(element => {
+                    const key = element.getAttribute('data-translate');
+                    if (translations[key]) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = translations[key];
+                        } else {
+                            element.textContent = translations[key];
+                        }
+                    }
+                });
+                
+                if (modLanguageData) {
+                    renderTranslationTable();
+                }
+            }
+
+            uiLanguageSelector.addEventListener('change', function() {
+                currentUiLang = this.value;
+                localStorage.setItem('uiLanguage', currentUiLang);
+                updateUiLanguage();
+            });
+
+            initUiLanguage();
 
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
@@ -319,10 +505,10 @@
                 try {
                     const newCode = codeEditor.value;
                     modLanguageData = parseModLanguageCode(newCode);
-                    showMessage('Đã cập nhật mã nguồn thành công!', 'success');
+                    showMessage(uiTranslations[currentUiLang].code_update_success, 'success');
                     renderTranslationTable();
                 } catch (error) {
-                    showMessage('Lỗi khi phân tích mã nguồn: ' + error.message, 'error');
+                    showMessage(uiTranslations[currentUiLang].code_parse_error + error.message, 'error');
                 }
             });
 
@@ -343,14 +529,14 @@
 
                         renderTranslationTable();
 
-                        showMessage('Đã import file thành công!', 'success');
+                        showMessage(uiTranslations[currentUiLang].import_success, 'success');
                     } catch (error) {
-                        showMessage('Lỗi khi phân tích file: ' + error.message, 'error');
+                        showMessage(uiTranslations[currentUiLang].parse_error + error.message, 'error');
                     }
                 };
 
                 reader.onerror = function () {
-                    showMessage('Lỗi khi đọc file', 'error');
+                    showMessage(uiTranslations[currentUiLang].file_error, 'error');
                 };
 
                 reader.readAsText(file);
@@ -414,16 +600,19 @@
                 return { translate: items };
             }
 
-
             function renderTranslationTable() {
                 if (!modLanguageData || !modLanguageData.translate) return;
+
+                const translations = uiTranslations[currentUiLang] || uiTranslations['en'];
+                const textLabel = translations['select_language'] ? 'Text (Key)' : 'Text (Khóa)';
+                const translationLabel = currentLang.toUpperCase() + ' Translation';
 
                 let tableHTML = `
                     <table class="translation-table">
                         <thead>
                             <tr>
-                                <th>Text (Key)</th>
-                                <th>Translation (${currentLang})</th>
+                                <th>${textLabel}</th>
+                                <th>${translationLabel}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -440,7 +629,7 @@
                                 <input type="text" value="${translation}" 
                                     data-key="${key}" 
                                     onchange="updateTranslation('${key}', this.value)" 
-                                    placeholder="Nhập bản dịch...">
+                                    placeholder="${translations['enter_translation'] || 'Nhập bản dịch...'}">
                             </td>
                         </tr>
                     `;
@@ -463,7 +652,7 @@
 
                     updateCodeEditor();
 
-                    showMessage('Đã cập nhật bản dịch cho: ' + key, 'success');
+                    showMessage(uiTranslations[currentUiLang].update_success, 'success');
                 }
             }
 
@@ -515,7 +704,7 @@
                     URL.revokeObjectURL(url);
                 }, 100);
 
-                showMessage('Đã xuất file thành công!', 'success');
+                showMessage(uiTranslations[currentUiLang].export_success, 'success');
             }
 
             function showMessage(message, type) {
