@@ -216,7 +216,6 @@
             display: block;
         }
 
-        /* UI Language Selector */
         .ui-language-selector {
             position: absolute;
             top: 10px;
@@ -233,6 +232,112 @@
         .ui-language-selector select {
             padding: 6px 10px;
             font-size: 14px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 6px;
+            }
+
+            header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                margin-top: 10px;
+            }
+
+            .ui-language-selector {
+                position: static;
+                margin-bottom: 15px;
+                justify-content: center;
+            }
+
+            .file-section {
+                padding: 15px;
+            }
+
+            .language-selector {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+
+            .language-selector label {
+                margin-bottom: 8px;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+                padding: 12px;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                margin-right: 0;
+                margin-bottom: 5px;
+                text-align: center;
+                border-radius: 4px;
+            }
+
+            .tab-button.active {
+                margin-bottom: 5px;
+            }
+
+            .code-editor {
+                height: 300px;
+                font-size: 14px;
+            }
+
+            .translation-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .translation-table th,
+            .translation-table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .translation-table input {
+                padding: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .file-section {
+                padding: 12px;
+            }
+
+            .code-editor {
+                height: 250px;
+                padding: 10px;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            select {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -258,7 +363,7 @@
                     <option value="it">Italian</option>
                 </select>
             </div>
-            
+
             <h1 data-translate="title">ModLanguage.js Editor</h1>
             <p class="description" data-translate="description">Công cụ chỉnh sửa và quản lý file ngôn ngữ cho mod</p>
         </header>
@@ -286,7 +391,8 @@
 
             <input type="file" id="fileInput" accept=".js" class="hidden">
             <button id="importBtn" class="btn" data-translate="import_button">Import ModLanguage.js</button>
-            <button id="exportBtn" class="btn btn-success" disabled data-translate="export_button">Export ModLanguage.js</button>
+            <button id="exportBtn" class="btn btn-success" disabled data-translate="export_button">Export
+                ModLanguage.js</button>
 
             <div id="messageArea"></div>
         </div>
@@ -294,7 +400,8 @@
         <div class="editor-section hidden" id="editorSection">
             <div class="tab-container">
                 <div class="tab-buttons">
-                    <button class="tab-button active" data-tab="table-view" data-translate="table_view">Xem dạng bảng</button>
+                    <button class="tab-button active" data-tab="table-view" data-translate="table_view">Xem dạng
+                        bảng</button>
                     <button class="tab-button" data-tab="code-view" data-translate="code_view">Xem mã nguồn</button>
                 </div>
 
@@ -305,7 +412,8 @@
 
                     <div class="tab-pane" id="code-view">
                         <textarea id="codeEditor" class="code-editor"></textarea>
-                        <button id="saveCodeBtn" class="btn" style="margin-top: 15px;" data-translate="save_changes">Lưu thay đổi</button>
+                        <button id="saveCodeBtn" class="btn" style="margin-top: 15px;" data-translate="save_changes">Lưu
+                            thay đổi</button>
                     </div>
                 </div>
             </div>
@@ -432,7 +540,7 @@
                 const savedLang = localStorage.getItem('uiLanguage');
                 if (savedLang && uiTranslations[savedLang]) {
                     currentUiLang = savedLang;
-                } 
+                }
                 else {
                     const browserLang = navigator.language.split('-')[0];
                     if (browserLang && uiTranslations[browserLang]) {
@@ -442,15 +550,15 @@
                         currentUiLang = 'en';
                     }
                 }
-                
+
                 uiLanguageSelector.value = currentUiLang;
-                
+
                 updateUiLanguage();
             }
 
             function updateUiLanguage() {
                 const translations = uiTranslations[currentUiLang] || uiTranslations['en'];
-                
+
                 document.querySelectorAll('[data-translate]').forEach(element => {
                     const key = element.getAttribute('data-translate');
                     if (translations[key]) {
@@ -461,13 +569,13 @@
                         }
                     }
                 });
-                
+
                 if (modLanguageData) {
                     renderTranslationTable();
                 }
             }
 
-            uiLanguageSelector.addEventListener('change', function() {
+            uiLanguageSelector.addEventListener('change', function () {
                 currentUiLang = this.value;
                 localStorage.setItem('uiLanguage', currentUiLang);
                 updateUiLanguage();
